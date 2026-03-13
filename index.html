@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>yoowebsite · Web developer Lahore | portfolio: salon, hospital, gym, hotel</title>
+  <!-- META KEYWORDS (SEO / GEO / AEO) -->
+  <meta name="description" content="Website design, Website create, Website services list, Top 10 website services, Website development company in Lahore, Best website services, Website Services Pakistan, Website services near me, Website development services in Pakistan, Best web development company in Lahore website developer near model town, lahore, Freelance website developer near me, Website development company in Lahore, Best website developer near me, Online website developer near me, Best web development company in Lahore, Website developer in Pakistan, Top 10 web development companies in Pakistan website developer near me yoowebsite.github.io">
+  <meta name="keywords" content="Website design, Website create, Website services list, Top 10 website services, Website development company in Lahore, Best website services, Website Services Pakistan, Website services near me, Website development services in Pakistan, Best web development company in Lahore website developer near model town, lahore, Freelance website developer near me, Website development company in Lahore, Best website developer near me, Online website developer near me, Best web development company in Lahore, Website developer in Pakistan, Top 10 web development companies in Pakistan website developer near me, yoowebsite.github.io">
+  <meta name="author" content="yoowebsite.github.io">
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore, Model Town">
+  <meta name="geo.position" content="31.487;74.345">
+  <!-- Open Graph -->
+  <meta property="og:title" content="yoowebsite.github.io – Web developer near Model Town Lahore">
+  <meta property="og:description" content="Portfolio: Salon, Hospital, Gym, Hotel. Best website services in Pakistan.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yoowebsite.github.io">
+  <meta property="og:image" content="https://yoowebsite.github.io/og-preview.jpg">
+  <!-- Fiverr link (rel=me optional) -->
+  <link rel="me" href="https://www.fiverr.com/hackinsecondshc/">
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Schema.org LocalBusiness -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "yoowebsite.github.io",
+    "image": "https://yoowebsite.github.io/logo.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "near Model Town, Main Boulevard",
+      "addressLocality": "Lahore",
+      "addressRegion": "Punjab",
+      "addressCountry": "PK"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 31.487,
+      "longitude": 74.345
+    },
+    "url": "https://yoowebsite.github.io",
+    "email": "hello@yoowebsite.github.io",
+    "sameAs": "https://www.fiverr.com/hackinsecondshc/",
+    "priceRange": "$$",
+    "description": "Website design & development company in Lahore, specializing in salon, hospital, gym, hotel websites."
+  }
+  </script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4faff;
+      color: #1e2b3c;
+      line-height: 1.5;
+    }
+    :root {
+      --primary: #0f4e6a;
+      --primary-light: #d3ebf7;
+      --secondary: #2b3f4f;
+      --accent: #f3b33d;
+      --soft-bg: #ffffff;
+      --shadow: 0 12px 30px rgba(0,30,45,0.08);
+      --radius-card: 32px;
+      --radius-btn: 60px;
+    }
+    .container {
+      width: 90%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+    }
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    h2:after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+    /* header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.7rem;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .logo span {
+      font-weight: 400;
+      color: #4f6f88;
+      font-size: 1rem;
+    }
+    .nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: var(--secondary);
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .nav a:hover { color: var(--primary); }
+    .menu-toggle { display: none; }
+    @media (max-width: 700px) {
+      .nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        background: white;
+        padding: 1.5rem 0;
+        margin-top: 1rem;
+        border-radius: 32px;
+        text-align: center;
+      }
+      .nav a {
+        margin: 0.7rem 0;
+      }
+      .menu-toggle {
+        display: block;
+        font-size: 2rem;
+        cursor: pointer;
+      }
+      #mobileMenu:checked ~ .nav {
+        display: flex;
+      }
+    }
+    input[type=checkbox] { display: none; }
+
+    /* hero */
+    .hero {
+      background: linear-gradient(145deg, #e2f0fa, white);
+      border-radius: var(--radius-card);
+      padding: 3rem 2.5rem;
+      margin: 2rem 0 3rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hero-text h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #103245;
+    }
+    .hero-text .highlight {
+      color: var(--primary);
+      border-bottom: 4px solid var(--accent);
+    }
+    .hero-keywords {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .keyword-badge {
+      background: white;
+      border-radius: 40px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      border: 1px solid #cde0ed;
+    }
+    .hero-cta {
+      margin-top: 2rem;
+    }
+    .btn {
+      display: inline-block;
+      background: white;
+      border: 1px solid #cde0ed;
+      padding: 0.9rem 2.2rem;
+      border-radius: var(--radius-btn);
+      font-weight: 600;
+      text-decoration: none;
+      color: inherit;
+      margin-right: 1rem;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: 0 10px 20px rgba(9, 80, 110, 0.3);
+    }
+    .btn-primary:hover { background: #0b5f82; transform: translateY(-3px); }
+    .btn-outline:hover { background: var(--primary-light); }
+
+    /* services grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin: 2rem 0 4rem;
+    }
+    .service-card {
+      background: white;
+      padding: 2rem 1.2rem;
+      border-radius: 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      font-weight: 600;
+      color: var(--primary);
+      border: 1px solid #ffffff50;
+      transition: 0.15s;
+    }
+    .service-card i {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      color: var(--accent);
+    }
+    .service-card:hover { background: var(--primary-light); }
+
+    /* portfolio projects - 4 cards */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    .project-card {
+      background: white;
+      border-radius: 38px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
+    }
+    .project-img {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: white;
+      background-size: cover;
+      background-position: center;
+    }
+    /* simulated images with solid color + pattern */
+    .img-salon { background: linear-gradient(145deg, #b5647a, #d38ea8); }
+    .img-hospital { background: linear-gradient(145deg, #1b6b84, #57a6c2); }
+    .img-gym { background: linear-gradient(145deg, #c96e2c, #f3a15f); }
+    .img-hotel { background: linear-gradient(145deg, #9b7e5a, #cfb190); }
+    .project-content {
+      padding: 2rem 1.8rem;
+    }
+    .project-content h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.8rem 0;
+    }
+    .project-tags span {
+      background: var(--primary-light);
+      border-radius: 40px;
+      padding: 0.2rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+    }
+    .project-link:hover { border-bottom-color: var(--primary); }
+
+    /* contact section (no phone, only email + fiverr) */
+    .contact-section {
+      background: white;
+      border-radius: 48px;
+      padding: 2.5rem;
+      margin: 4rem 0 2rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      align-items: center;
+    }
+    .contact-info {
+      flex: 1 1 250px;
+    }
+    .contact-info p {
+      margin: 1rem 0;
+      font-size: 1.2rem;
+    }
+    .contact-info i {
+      color: var(--primary);
+      width: 36px;
+    }
+    .fiverr-badge {
+      background: #1dbf73; /* Fiverr green */
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 0.5rem;
+    }
+    .fiverr-badge i { color: white; }
+    .map-placeholder {
+      background: #d1e2f0;
+      border-radius: 32px;
+      height: 180px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f5875;
+      font-weight: 600;
+      border: 2px dashed #a6c4db;
+    }
+    /* hidden modal (formspree, no phone) */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,30,40,0.5);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal-card {
+      background: white;
+      width: 90%;
+      max-width: 460px;
+      border-radius: 48px;
+      padding: 2.5rem;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,50,70,0.4);
+    }
+    .close-modal {
+      position: absolute;
+      top: 1.5rem; right: 2rem;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #6a7f8f;
+    }
+    .booking-form input,
+    .booking-form textarea {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      margin: 0.5rem 0 1.2rem;
+      border: 1px solid #c9ddec;
+      border-radius: 40px;
+      background: #f9fcff;
+      font-size: 1rem;
+    }
+    .booking-form button {
+      width: 100%;
+      padding: 1.1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .footer {
+      background: #11212e;
+      color: #9fb3c7;
+      padding: 3rem 0;
+      border-radius: 48px 48px 0 0;
+      margin-top: 4rem;
+    }
+    .footer a { color: #c1d9ec; text-decoration: none; }
+    .small-note { font-size: 0.7rem; opacity: 0.6; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">yoowebsite<span>.github.io</span></div>
+  <input type="checkbox" id="mobileMenu">
+  <label for="mobileMenu" class="menu-toggle"><i class="fas fa-bars"></i></label>
+  <div class="nav">
+    <a href="#">Home</a>
+    <a href="#services">Services</a>
+    <a href="#portfolio">Projects</a>
+    <a href="#contact">Contact</a>
+    <a href="#" id="openModalBtn">Get quote</a>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Hero with keywords -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Website developer <span class="highlight">near Model Town, Lahore</span> <br> 4 projects: salon, hospital, gym, hotel</h1>
+      <div class="hero-keywords">
+        <span class="keyword-badge">Website design</span>
+        <span class="keyword-badge">Website create</span>
+        <span class="keyword-badge">Website services list</span>
+        <span class="keyword-badge">Top 10 website services</span>
+        <span class="keyword-badge">Website development company in Lahore</span>
+        <span class="keyword-badge">Best website services</span>
+        <span class="keyword-badge">Website Services Pakistan</span>
+        <span class="keyword-badge">Website services near me</span>
+        <span class="keyword-badge">Freelance website developer near me</span>
+        <span class="keyword-badge">Best web development company in Lahore</span>
+        <span class="keyword-badge">Website developer in Pakistan</span>
+      </div>
+      <div class="hero-cta">
+        <a href="#portfolio" class="btn btn-primary">See work <i class="fas fa-arrow-right"></i></a>
+        <a href="#" class="btn btn-outline" id="openModalBtn2">Start project</a>
+      </div>
+    </div>
+    <div style="font-size: 5rem; color: var(--primary); opacity: 0.2;">&lt;/&gt;</div>
+  </div>
+
+  <!-- Services grid (keywords) -->
+  <section id="services">
+    <h2>Website services – I deliver</h2>
+    <div class="services-grid">
+      <div class="service-card"><i class="fas fa-paint-brush"></i> Website design</div>
+      <div class="service-card"><i class="fas fa-code"></i> Website create</div>
+      <div class="service-card"><i class="fas fa-list"></i> Website services list</div>
+      <div class="service-card"><i class="fas fa-trophy"></i> Top 10 website services</div>
+      <div class="service-card"><i class="fas fa-building"></i> Development company Lahore</div>
+      <div class="service-card"><i class="fas fa-star"></i> Best website services</div>
+      <div class="service-card"><i class="fas fa-globe"></i> Website Services Pakistan</div>
+      <div class="service-card"><i class="fas fa-map-marker-alt"></i> Website services near me</div>
+      <div class="service-card"><i class="fas fa-laptop"></i> Freelance developer near me</div>
+      <div class="service-card"><i class="fas fa-city"></i> Best web development Lahore</div>
+    </div>
+  </section>
+
+  <!-- Portfolio: four projects -->
+  <section id="portfolio">
+    <h2>Recent projects</h2>
+    <div class="portfolio-grid">
+      <!-- Shahzad Salon -->
+      <div class="project-card">
+        <div class="project-img img-salon"><i class="fas fa-cut"></i></div>
+        <div class="project-content">
+          <h3>Shahzad Salon</h3>
+          <div class="project-tags"><span>appointment booking</span><span>stylist profiles</span><span>price list</span></div>
+          <p>Complete salon website with online scheduling, service menu, and before/after gallery. Fully responsive.</p>
+          <a href="#" class="project-link">Live preview <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <!-- Noor Hospital -->
+      <div class="project-card">
+        <div class="project-img img-hospital"><i class="fas fa-hospital"></i></div>
+        <div class="project-content">
+          <h3>Noor Hospital <span style="font-size:1rem;">نور ھسپتال</span></h3>
+          <div class="project-tags"><span>24/7 emergency</span><span>doctor profiles</span><span>review system</span></div>
+          <p>Multi-page hospital website with Google Maps, department listings, and patient reviews.</p>
+          <a href="#" class="project-link">Live preview <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <!-- Fitness Gym -->
+      <div class="project-card">
+        <div class="project-img img-gym"><i class="fas fa-dumbbell"></i></div>
+        <div class="project-content">
+          <h3>Fitness Gym</h3>
+          <div class="project-tags"><span>class schedules</span><span>trainer bios</span><span>membership plans</span></div>
+          <p>Modern gym website with dynamic class timetable, membership signup, and nutrition blog.</p>
+          <a href="#" class="project-link">Live preview <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <!-- Al-Hafiz Hotel -->
+      <div class="project-card">
+        <div class="project-img img-hotel"><i class="fas fa-hotel"></i></div>
+        <div class="project-content">
+          <h3>Al-Hafiz Hotel</h3>
+          <div class="project-tags"><span>room booking</span><span>restaurant menu</span><span>nearby attractions</span></div>
+          <p>Elegant hotel website with online reservations, photo gallery, and banquet information.</p>
+          <a href="#" class="project-link">Live preview <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact (NO PHONE, only email + Fiverr) -->
+  <section id="contact" class="contact-section">
+    <h2 style="margin-top:0;">Let's work together</h2>
+    <div class="contact-flex">
+      <div class="contact-info">
+        <p><i class="fas fa-envelope"></i> hello@yoowebsite.github.io</p>
+        <p><i class="fab fa-fiverr" style="color: #1dbf73;"></i> <a href="https://www.fiverr.com/hackinsecondshc/" target="_blank" class="fiverr-badge"><i class="fab fa-fiverr"></i> Hire me on Fiverr</a></p>
+        <p><i class="fas fa-map-marker-alt"></i> near Model Town, Lahore (service area)</p>
+        <div class="map-placeholder">
+          <i class="fas fa-map" style="font-size:2rem;"></i> Google Map: Model Town, Lahore
+        </div>
+      </div>
+      <div style="flex:1 1 300px;">
+        <p style="font-weight:600; font-size:1.2rem;">Request a quote (no phone needed)</p>
+        <button class="btn btn-primary" id="openModalBtn3" style="border:none; cursor:pointer;"><i class="fas fa-lock"></i> Send message via Formspree</button>
+        <p class="small-note" style="margin-top:1rem;">Your information is securely sent – I'll reply within hours.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between;">
+      <span>© 2025 yoowebsite.github.io – website developer near Model Town Lahore</span>
+      <span>
+        <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="https://www.fiverr.com/hackinsecondshc/" target="_blank">Fiverr</a>
+      </span>
+    </div>
+    <div style="margin-top:2rem; font-size:0.85rem; opacity:0.6;">
+      Keywords: Website design, Website create, Website services list, Top 10 website services, Website development company in Lahore, Best website services, Website Services Pakistan, Website services near me, Website development services in Pakistan, Best web development company in Lahore website developer near model town, lahore, Freelance website developer near me, Website development company in Lahore, Best website developer near me, Online website developer near me, Best web development company in Lahore, Website developer in Pakistan, Top 10 web development companies in Pakistan website developer near me.
+    </div>
+  </div>
+</footer>
+
+<!-- Hidden modal (Formspree, no phone field) -->
+<div id="bookingModal" class="modal">
+  <div class="modal-card">
+    <span class="close-modal" id="closeModalBtn">&times;</span>
+    <h3 style="margin-bottom:1.2rem;">🚀 Start your website</h3>
+    <form class="booking-form" action="https://formspree.io/f/xjkgrgry" method="POST" id="secretForm">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email address" required>
+      <input type="text" name="project" placeholder="Project type (salon, hospital, gym, hotel...)" required>
+      <textarea name="message" rows="2" placeholder="Tell me about your idea" required></textarea>
+      <input type="hidden" name="_subject" value="New project inquiry from portfolio">
+      <button type="submit">Send securely <i class="fas fa-paper-plane"></i></button>
+      <p class="small-note" style="margin-top:0.8rem;">🔒 via formspree.io – no phone needed</p>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const modal = document.getElementById('bookingModal');
+    const openBtns = [
+      document.getElementById('openModalBtn'),
+      document.getElementById('openModalBtn2'),
+      document.getElementById('openModalBtn3')
+    ];
+    const closeBtn = document.getElementById('closeModalBtn');
+    openBtns.forEach(btn => btn && btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    }));
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    // Optional: close after submit (Formspree redirects, but we hide after 1s)
+    const form = document.getElementById('secretForm');
+    form.addEventListener('submit', function() {
+      setTimeout(() => { modal.style.display = 'none'; }, 1000);
+    });
+  })();
+</script>
+
+<!-- Replace formspree endpoint "xjkgrgry" with your own ID if needed -->
+</body>
+</html>
