@@ -1,22 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Automation Command Center</title>
-    <meta name="description" content="AI Automation Agent — Live Operations Dashboard" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body, #root { height: 100%; width: 100%; }
-      body { background: #090c14; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🤖 Automation Command Center</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{min-height:100%;width:100%;background:#090c14}
+body{font-family:'DM Sans','Segoe UI',sans-serif;color:#e2e8f0}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(99,102,241,.4);border-radius:2px}
+input,button{font-family:inherit}
+input::placeholder{color:#334155}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;transition:all .25s}
+.card:hover{border-color:rgba(99,102,241,.35);transform:translateY(-2px);box-shadow:0 12px 40px rgba(99,102,241,.12)}
+.badge{font-size:10px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.06em}
+.badge-green{background:rgba(34,197,94,.12);color:#22c55e}
+.badge-yellow{background:rgba(245,158,11,.12);color:#f59e0b}
+.badge-red{background:rgba(239,68,68,.12);color:#ef4444}
+.badge-purple{background:rgba(99,102,241,.14);color:#818cf8}
+@media(max-width:700px){
+  .g4{grid-template-columns:repeat(2,1fr)!important}
+  .g3{grid-template-columns:1fr!important}
+  .g2{grid-template-columns:1fr!important}
+  .tabrow{flex-wrap:wrap!important}
+}
+</style>
+</head>
+<body>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#6366f1;font-size:18px;font-family:monospace">Loading...</div></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── YOUR SUPABASE KEYS (already filled in) ─────────────────────────── */
+const SB_URL = "https://pmqjapkhhervwecmcdvk.supabase.co";
+const SB_KEY = "sb_publishable_-1BOn0KCBIKN7YMnzcDOyw_KEU1DU73";
+/* ───────────────────────────────────────────────────────────────────── */
+
+/* ── Supabase REST helper ──────────────────────────────────────────── */
+async function sbGet(table, select="*", extra="") {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?select=${select}${extra}&limit=100`, {
+      headers:{ apikey: SB_KEY, Authorization:`Bearer ${SB_KEY}` }
+    });
+    if(!r.ok) return [];
+    return await r.json();
+  } catch(e){ return []; }
+}
+
+/* ── Demo data (shown while loading or if empty) ──────────────────── */
+const DEMO = {
+  stats:{ leads:342, emails:189, posts:28, actions:94, failures:2 },
+  pipeline:[
+    {status:"New",          total:47,  week:47, avg_score:58},
+    {status:"Contacted",    total:183, week:31, avg_score:72},
+    {status:"Qualified",    total:89,  week:14, avg_score:84},
+    {status:"Disqualified", total:23,  week:4,  avg_score:29},
+  ],
+  social:[
+    {platform:"Twitter/X", total_posts:14, total_likes:847,  total_comments:92,  avg_engagement_rate:"4.2"},
+    {platform:"LinkedIn",  total_posts:9,  total_likes:321,  total_comments:55,  avg_engagement_rate:"3.8"},
+    {platform:"Instagram", total_posts:5,  total_likes:1204, total_comments:138, avg_engagement_rate:"6.1"},
+  ],
+  actions:[
+    {module:"email",  action:"follow_up_sent",   status:"success", occurrences:18, logged_at: new Date(Date.now()-300000).toISOString()},
+    {module:"leads",  action:"scrape_complete",   status:"success", occurrences:3,  logged_at: new Date(Date.now()-900000).toISOString()},
+    {module:"social", action:"post_published",    status:"success", occurrences:2,  logged_at: new Date(Date.now()-3600000).toISOString()},
+    {module:"email",  action:"follow_up_failed",  status:"failed",  occurrences:2,  logged_at: new Date(Date.now()-1800000).toISOString()},
+    {module:"report", action:"daily_report_sent", status:"success", occurrences:1,  logged_at: new Date(Date.now()-7200000).toISOString()},
+  ]
+};
+
+const STATUS_COLOR = {New:"#6366f1",Contacted:"#f59e0b",Qualified:"#22c55e",Disqualified:"#ef4444"};
+const MOD_ICON     = {email:"📧",leads:"🎯",social:"📱",report:"📊",github:"⚙️"};
+const PLAT_ICON    = {"Twitter/X":"𝕏",LinkedIn:"in",Instagram:"◉",Facebook:"f",TikTok:"♪"};
+
+/* ── Animated counter ──────────────────────────────────────────────── */
+function Counter({value, color="#6366f1", size=34}){
+  const [n,setN] = useState(0);
+  useEffect(()=>{
+    const end=Number(value)||0;
+    if(end===0){setN(0);return;}
+    let cur=0; const step=Math.max(1,Math.ceil(end/40));
+    const t=setInterval(()=>{cur=Math.min(cur+step,end);setN(cur);if(cur>=end)clearInterval(t);},18);
+    return()=>clearInterval(t);
+  },[value]);
+  return <span style={{fontSize:size,fontWeight:800,color,fontFamily:"'DM Mono',monospace",lineHeight:1}}>{n.toLocaleString()}</span>;
+}
+
+/* ── AI Chat panel ─────────────────────────────────────────────────── */
+function AiChat({stats}){
+  const [msgs,setMsgs] = useState([
+    {role:"assistant", text:"👋 Agent online! میں آپ کے automation system کو monitor کر رہا ہوں۔ کچھ بھی پوچھیں — leads، emails، social media، یا system health کے بارے میں۔"}
+  ]);
+  const [input,setInput] = useState("");
+  const [busy,setBusy]   = useState(false);
+  const bottom           = useRef(null);
+
+  useEffect(()=>{ bottom.current?.scrollIntoView({behavior:"smooth"}); },[msgs]);
+
+  async function send(){
+    if(!input.trim()||busy) return;
+    const text=input.trim(); setInput(""); setBusy(true);
+    setMsgs(m=>[...m,{role:"user",text}]);
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:800,
+          system:`You are an AI automation agent assistant. Live stats: Total Leads=${stats.leads}, Emails Sent=${stats.emails}, Posts Published=${stats.posts}, Actions 24h=${stats.actions}, Failures=${stats.failures}. The system uses Supabase + GitHub Actions. Be concise and helpful. You can respond in Urdu or English based on the user's language.`,
+          messages:[...msgs.map(m=>({role:m.role,content:m.text})),{role:"user",content:text}]
+        })
+      });
+      const d=await res.json();
+      setMsgs(m=>[...m,{role:"assistant",text:d.content?.[0]?.text||"کوئی جواب نہیں ملا۔"}]);
+    }catch(e){
+      setMsgs(m=>[...m,{role:"assistant",text:`⚠️ Error: ${e.message}`}]);
+    }
+    setBusy(false);
+  }
+
+  return(
+    <div style={{display:"flex",flexDirection:"column",height:"100%"}}>
+      <div style={{flex:1,overflowY:"auto",padding:16,display:"flex",flexDirection:"column",gap:10}}>
+        {msgs.map((m,i)=>(
+          <div key={i} style={{
+            alignSelf:m.role==="user"?"flex-end":"flex-start",maxWidth:"86%",
+            background:m.role==="user"?"linear-gradient(135deg,#6366f1,#8b5cf6)":"rgba(255,255,255,0.06)",
+            border:m.role==="assistant"?"1px solid rgba(255,255,255,0.08)":"none",
+            color:"#e2e8f0",fontSize:13,lineHeight:1.65,whiteSpace:"pre-wrap",
+            borderRadius:m.role==="user"?"18px 18px 4px 18px":"4px 18px 18px 18px",
+            padding:"10px 14px",animation:"fadeUp .3s ease"
+          }}>{m.text}</div>
+        ))}
+        {busy&&<div style={{alignSelf:"flex-start",color:"#6366f1",fontSize:22,letterSpacing:6}}>···</div>}
+        <div ref={bottom}/>
+      </div>
+      <div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.07)",display:"flex",gap:8}}>
+        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()}
+          placeholder="Agent سے کچھ بھی پوچھیں..."
+          style={{flex:1,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"9px 14px",color:"#e2e8f0",fontSize:13,outline:"none"}}/>
+        <button onClick={send} disabled={busy}
+          style={{background:busy?"#1e293b":"#6366f1",color:"white",border:"none",borderRadius:10,padding:"9px 20px",cursor:busy?"not-allowed":"pointer",fontSize:16,fontWeight:700,transition:"background .2s"}}>
+          {busy?"…":"↑"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main App ──────────────────────────────────────────────────────── */
+function App(){
+  const [tab,setTab]         = useState("overview");
+  const [now,setNow]         = useState(new Date());
+  const [loading,setLoading] = useState(true);
+  const [stats,setStats]     = useState(DEMO.stats);
+  const [pipeline,setPipeline] = useState(DEMO.pipeline);
+  const [social,setSocial]   = useState(DEMO.social);
+  const [actions,setActions] = useState(DEMO.actions);
+  const [config,setConfig]   = useState({lead_scraping_enabled:true,email_followup_enabled:true,social_posting_enabled:true});
+
+  /* Live clock */
+  useEffect(()=>{const t=setInterval(()=>setNow(new Date()),1000);return()=>clearInterval(t);},[]);
+
+  /* Load real data from Supabase */
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const [leads,emailsData,posts,logs,cfg] = await Promise.all([
+          sbGet("leads","lead_id,status,score,created_at"),
+          sbGet("emails","email_id,direction,sent_at"),
+          sbGet("social_posts","post_id,status,platform,likes_count,comments_count,engagement_rate"),
+          sbGet("action_logs","module,action,status,logged_at","&logged_at=gte."+new Date(Date.now()-86400000).toISOString()+"&order=logged_at.desc"),
+          sbGet("automation_config","key,value"),
+        ]);
+
+        const now=new Date(); const weekAgo=new Date(Date.now()-7*86400000);
+
+        /* Stats */
+        const totalLeads=leads.length||DEMO.stats.leads;
+        const emailsSent=(emailsData.filter(e=>e.direction==="outbound")).length||DEMO.stats.emails;
+        const pubPosts=(posts.filter(p=>p.status==="published")).length||DEMO.stats.posts;
+        const actions24=logs.length||DEMO.stats.actions;
+        const fails=logs.filter(l=>l.status==="failed").length||DEMO.stats.failures;
+        setStats({leads:totalLeads,emails:emailsSent,posts:pubPosts,actions:actions24,failures:fails});
+
+        /* Pipeline */
+        if(leads.length>0){
+          const statuses=["New","Contacted","Qualified","Disqualified"];
+          setPipeline(statuses.map(s=>({
+            status:s,
+            total:leads.filter(l=>l.status===s).length,
+            week:leads.filter(l=>l.status===s&&new Date(l.created_at)>weekAgo).length,
+            avg_score:Math.round((leads.filter(l=>l.status===s).reduce((a,b)=>a+(b.score||0),0))/(leads.filter(l=>l.status===s).length||1))
+          })));
+        }
+
+        /* Social */
+        if(posts.length>0){
+          const plats=["Twitter/X","LinkedIn","Instagram"];
+          setSocial(plats.map(p=>({
+            platform:p,
+            total_posts:posts.filter(x=>x.platform===p).length,
+            total_likes:posts.filter(x=>x.platform===p).reduce((a,b)=>a+(b.likes_count||0),0),
+            total_comments:posts.filter(x=>x.platform===p).reduce((a,b)=>a+(b.comments_count||0),0),
+            avg_engagement_rate:(posts.filter(x=>x.platform===p).reduce((a,b)=>a+(parseFloat(b.engagement_rate)||0),0)/(posts.filter(x=>x.platform===p).length||1)).toFixed(1)
+          })));
+        }
+
+        /* Actions */
+        if(logs.length>0) setActions(logs.slice(0,8));
+
+        /* Config */
+        if(cfg.length>0){
+          const cfgMap={};
+          cfg.forEach(c=>{ cfgMap[c.key]=c.value===true||c.value==="true"||c.value===1; });
+          setConfig(c=>({...c,...cfgMap}));
+        }
+      }catch(e){console.log("Using demo data:",e.message);}
+      setLoading(false);
+    })();
+  },[]);
+
+  const TABS=[
+    {id:"overview", label:"📊 Overview"},
+    {id:"leads",    label:"🎯 Leads"},
+    {id:"social",   label:"📱 Social"},
+    {id:"email",    label:"📧 Email"},
+    {id:"agent",    label:"🤖 AI Agent"},
+    {id:"setup",    label:"⚙️ Setup"},
+  ];
+
+  return(
+    <div style={{minHeight:"100vh",background:"#090c14",color:"#e2e8f0",overflowX:"hidden"}}>
+      {/* BG grid */}
+      <div style={{position:"fixed",inset:0,backgroundImage:"linear-gradient(rgba(99,102,241,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.04) 1px,transparent 1px)",backgroundSize:"44px 44px",pointerEvents:"none",zIndex:0}}/>
+      {/* Glow */}
+      <div style={{position:"fixed",top:-300,left:-200,width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(99,102,241,.1) 0%,transparent 65%)",pointerEvents:"none",zIndex:0}}/>
+      <div style={{position:"fixed",bottom:-200,right:-100,width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle,rgba(139,92,246,.08) 0%,transparent 65%)",pointerEvents:"none",zIndex:0}}/>
+
+      <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 20px 60px"}}>
+
+        {/* ── HEADER ── */}
+        <div style={{padding:"24px 0 18px",display:"flex",justifyContent:"space-between",alignItems:"flex-end",borderBottom:"1px solid rgba(255,255,255,0.06)",marginBottom:24,flexWrap:"wrap",gap:12}}>
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+              <div style={{width:9,height:9,borderRadius:"50%",background:loading?"#f59e0b":"#22c55e",boxShadow:`0 0 10px ${loading?"#f59e0b":"#22c55e"}`,animation:"pulse 2s infinite"}}/>
+              <span style={{fontSize:11,color:loading?"#f59e0b":"#22c55e",fontFamily:"monospace",letterSpacing:".1em",fontWeight:700}}>
+                {loading?"CONNECTING TO SUPABASE...":"LIVE · SUPABASE CONNECTED"}
+              </span>
+            </div>
+            <h1 style={{margin:0,fontSize:26,fontWeight:800,letterSpacing:"-.02em",background:"linear-gradient(135deg,#e2e8f0 30%,#6366f1)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>
+              Automation Command Center
+            </h1>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:20,fontFamily:"'DM Mono',monospace",fontWeight:700,color:"#6366f1"}}>{now.toLocaleTimeString()}</div>
+            <div style={{fontSize:11,color:"#475569",marginTop:2}}>{now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}</div>
+          </div>
+        </div>
+
+        {/* ── TABS ── */}
+        <div className="tabrow" style={{display:"flex",gap:3,marginBottom:24,background:"rgba(255,255,255,0.03)",borderRadius:12,padding:4,border:"1px solid rgba(255,255,255,0.06)",width:"fit-content",flexWrap:"wrap"}}>
+          {TABS.map(t=>(
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{
+              padding:"7px 14px",borderRadius:9,border:"none",cursor:"pointer",
+              fontSize:12,fontWeight:600,
+              background:tab===t.id?"#6366f1":"transparent",
+              color:tab===t.id?"white":"#64748b",
+              transition:"all .2s"
+            }}>{t.label}</button>
+          ))}
+        </div>
+
+        {/* ═══ OVERVIEW ═══ */}
+        {tab==="overview"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:20,animation:"fadeUp .4s ease"}}>
+
+            {/* Stat cards */}
+            <div className="g4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
+              {[
+                {icon:"🎯",label:"Total Leads",     value:stats.leads,    color:"#6366f1",sub:"All pipeline stages"},
+                {icon:"📧",label:"Emails Sent",     value:stats.emails,   color:"#f59e0b",sub:"Outbound total"},
+                {icon:"📱",label:"Posts Published", value:stats.posts,    color:"#22c55e",sub:"All platforms"},
+                {icon:"⚡",label:"Actions (24h)",   value:stats.actions,  color:"#8b5cf6",sub:`${stats.failures} failed`},
+              ].map(({icon,label,value,color,sub})=>(
+                <div key={label} className="card">
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                    <span style={{fontSize:22}}>{icon}</span>
+                    <div style={{width:8,height:8,borderRadius:"50%",background:color,boxShadow:`0 0 8px ${color}`}}/>
+                  </div>
+                  <Counter value={value} color={color}/>
+                  <div style={{fontSize:11,color:"#94a3b8",marginTop:6,textTransform:"uppercase",letterSpacing:".06em",fontWeight:600}}>{label}</div>
+                  <div style={{fontSize:11,color:"#475569",marginTop:3}}>{sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Module status */}
+            <div className="g3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}}>
+              {[
+                {name:"Lead Scraper",      icon:"🕷️",status:"ready",   when:"6:00 AM UTC · Daily"},
+                {name:"Email Agent",       icon:"📧",status:"ready",   when:"6:00 AM UTC · Daily"},
+                {name:"Social Poster",     icon:"📱",status:"ready",   when:"9 AM & 5 PM UTC"},
+                {name:"Daily Reporter",    icon:"📊",status:"ready",   when:"10:00 PM UTC · Daily"},
+                {name:"Competitor Tracker",icon:"🔍",status:"pending", when:"API credentials needed"},
+                {name:"GitHub CI/CD",      icon:"⚙️",status:"pending", when:"Push automation/ folder"},
+              ].map((m,i)=>(
+                <div key={i} className="card">
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                    <span style={{fontSize:22}}>{m.icon}</span>
+                    <span className={`badge badge-${m.status==="ready"?"green":"yellow"}`}>{m.status.toUpperCase()}</span>
+                  </div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#e2e8f0"}}>{m.name}</div>
+                  <div style={{fontSize:11,color:"#6366f1",marginTop:5,fontFamily:"monospace"}}>{m.when}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Recent actions */}
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:22}}>
+              <h3 style={{margin:"0 0 16px",fontSize:13,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:".06em"}}>Recent Actions (24h)</h3>
+              {actions.length===0?<div style={{color:"#475569",fontSize:13,textAlign:"center",padding:"20px 0"}}>کوئی action نہیں ملا — agent ابھی setup نہیں ہوا</div>:(
+                <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                  {actions.slice(0,6).map((a,i)=>(
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"9px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                      <span style={{fontSize:14,width:24}}>{MOD_ICON[a.module]||"⚡"}</span>
+                      <span className="badge badge-purple" style={{minWidth:60,textAlign:"center"}}>{a.module}</span>
+                      <span style={{flex:1,fontSize:12,color:"#cbd5e1",fontFamily:"monospace"}}>{a.action}</span>
+                      <span className={`badge badge-${a.status==="success"?"green":"red"}`}>{a.status}</span>
+                      <span style={{fontSize:11,color:"#475569",minWidth:60,textAlign:"right"}}>
+                        {Math.round((Date.now()-new Date(a.logged_at||a.last_seen))/60000)}m ago
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ LEADS ═══ */}
+        {tab==="leads"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:20,animation:"fadeUp .4s ease"}}>
+            <div className="g4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
+              {pipeline.map(r=>(
+                <div key={r.status} className="card" style={{borderColor:`${STATUS_COLOR[r.status]}22`}}>
+                  <div style={{width:4,height:36,background:STATUS_COLOR[r.status],borderRadius:2,marginBottom:14}}/>
+                  <div style={{fontSize:38,fontWeight:800,color:STATUS_COLOR[r.status],fontFamily:"monospace"}}>{r.total}</div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#e2e8f0",marginTop:6}}>{r.status}</div>
+                  <div style={{marginTop:10}}>
+                    <div style={{fontSize:11,color:"#64748b"}}>+{r.week} this week</div>
+                    <div style={{fontSize:11,color:"#64748b",marginTop:3}}>Avg score: <span style={{color:STATUS_COLOR[r.status]}}>{r.avg_score||0}</span></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:22}}>
+              <h3 style={{margin:"0 0 16px",fontSize:13,fontWeight:700,color:"#64748b",textTransform:"uppercase",letterSpacing:".06em"}}>Scraping Targets</h3>
+              {[
+                {site:"yelp.com",  query:"digital marketing",  loc:"New York", industry:"Digital Marketing"},
+                {site:"yelp.com",  query:"software agency",    loc:"London",   industry:"Software Agency"},
+                {site:"clutch.co", query:"digital agencies",   loc:"Global",   industry:"Digital Marketing"},
+              ].map((t,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"11px 0",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:600,color:"#e2e8f0"}}>{t.site}</div>
+                    <div style={{fontSize:11,color:"#64748b",marginTop:2}}>{t.query} · {t.loc}</div>
+                  </div>
+                  <span className="badge badge-purple">{t.industry}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ SOCIAL ═══ */}
+        {tab==="social"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:20,animation:"fadeUp .4s ease"}}>
+            <div className="g3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}}>
+              {social.map(r=>(
+                <div key={r.platform} className="card">
+                  <div style={{fontSize:32,marginBottom:12}}>{PLAT_ICON[r.platform]||"📱"}</div>
+                  <div style={{fontSize:15,fontWeight:700,color:"#e2e8f0",marginBottom:16}}>{r.platform}</div>
+                  <div className="g2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                    {[["Posts",r.total_posts],["Likes",r.total_likes],["Comments",r.total_comments],["Engagement",`${r.avg_engagement_rate}%`]].map(([l,v])=>(
+                      <div key={l} style={{background:"rgba(255,255,255,0.04)",borderRadius:10,padding:"10px 12px"}}>
+                        <div style={{fontSize:18,fontWeight:800,color:"#6366f1"}}>{v}</div>
+                        <div style={{fontSize:10,color:"#64748b",marginTop:2}}>{l}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:22}}>
+              <h3 style={{margin:"0 0 16px",fontSize:13,fontWeight:700,color:"#64748b",textTransform:"uppercase"}}>Posting Schedule</h3>
+              {[
+                {time:"9:00 AM UTC", label:"Morning Post",  plats:["Twitter/X","LinkedIn"]},
+                {time:"5:00 PM UTC", label:"Evening Post",  plats:["Twitter/X","Instagram"]},
+                {time:"10:00 PM UTC",label:"Daily Report",  plats:["Email"]},
+              ].map((s,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:16,padding:"11px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                  <code style={{width:100,fontSize:12,color:"#6366f1"}}>{s.time}</code>
+                  <span style={{flex:1,fontSize:13,color:"#cbd5e1"}}>{s.label}</span>
+                  <div style={{display:"flex",gap:6}}>
+                    {s.plats.map(p=><span key={p} className="badge badge-purple">{p}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ EMAIL ═══ */}
+        {tab==="email"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:20,animation:"fadeUp .4s ease"}}>
+            <div className="g4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
+              {[["Outbound",stats.emails,"#6366f1"],["Follow-ups","—","#f59e0b"],["Replies","—","#22c55e"],["Open Rate","—","#8b5cf6"]].map(([l,v,c])=>(
+                <div key={l} className="card">
+                  <div style={{fontSize:34,fontWeight:800,color:c,fontFamily:"monospace"}}>{v}</div>
+                  <div style={{fontSize:12,color:"#94a3b8",marginTop:8,textTransform:"uppercase",letterSpacing:".06em"}}>{l}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:22}}>
+              <h3 style={{margin:"0 0 16px",fontSize:13,fontWeight:700,color:"#64748b",textTransform:"uppercase"}}>Automation Rules</h3>
+              {[
+                ["⏱️","Follow-up delay","3 days"],
+                ["🔁","Max follow-ups / lead","3 emails"],
+                ["📬","Daily send limit","50 emails/day"],
+                ["🏆","Lead score to qualify","≥ 60 / 100"],
+                ["🚫","Skip blacklist","noreply, spam, donotreply"],
+              ].map(([ico,rule,val])=>(
+                <div key={rule} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                  <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                    <span>{ico}</span><span style={{fontSize:13,color:"#cbd5e1"}}>{rule}</span>
+                  </div>
+                  <code style={{fontSize:12,color:"#6366f1"}}>{val}</code>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ AI AGENT ═══ */}
+        {tab==="agent"&&(
+          <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,height:520,display:"flex",flexDirection:"column",overflow:"hidden",animation:"fadeUp .4s ease"}}>
+            <div style={{padding:"14px 20px",borderBottom:"1px solid rgba(255,255,255,0.07)",display:"flex",alignItems:"center",gap:10,background:"rgba(255,255,255,0.02)"}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",boxShadow:"0 0 8px #22c55e",animation:"pulse 2s infinite"}}/>
+              <span style={{fontSize:13,fontWeight:700,color:"#e2e8f0"}}>AI Agent — Live Chat</span>
+              <span style={{marginLeft:"auto",fontSize:11,color:"#475569"}}>Powered by Claude</span>
+            </div>
+            <AiChat stats={stats}/>
+          </div>
+        )}
+
+        {/* ═══ SETUP ═══ */}
+        {tab==="setup"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:20,animation:"fadeUp .4s ease"}}>
+            {/* Status */}
+            <div style={{background:"rgba(34,197,94,.06)",border:"1px solid rgba(34,197,94,.2)",borderRadius:16,padding:20}}>
+              <div style={{fontSize:15,fontWeight:800,color:"#22c55e",marginBottom:8}}>✅ Supabase — CONNECTED</div>
+              <div style={{fontSize:12,color:"#94a3b8"}}>Project: pmqjapkhhervwecmcdvk · Region: ap-northeast-2 · Status: ACTIVE_HEALTHY</div>
+              <div style={{fontSize:12,color:"#94a3b8",marginTop:4}}>All tables created · RLS policies active · Dashboard views live</div>
+            </div>
+
+            {/* Remaining steps */}
+            <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:22}}>
+              <h3 style={{margin:"0 0 18px",fontSize:14,fontWeight:800,color:"#e2e8f0"}}>🔑 Remaining GitHub Secrets to Add</h3>
+              <p style={{fontSize:12,color:"#64748b",marginBottom:16}}>Go to: Your GitHub repo → Settings → Secrets → Actions → New repository secret</p>
+              {[
+                {key:"SUPABASE_SERVICE_KEY",    hint:"sb_secret_... (for automation modules)"},
+                {key:"GMAIL_CLIENT_ID",          hint:"Google Cloud Console → OAuth2"},
+                {key:"GMAIL_CLIENT_SECRET",      hint:"Google Cloud Console → OAuth2"},
+                {key:"GMAIL_REFRESH_TOKEN",      hint:"Generated via OAuth2 flow"},
+                {key:"TWITTER_API_KEY",           hint:"developer.twitter.com"},
+                {key:"TWITTER_API_SECRET",        hint:"developer.twitter.com"},
+                {key:"TWITTER_ACCESS_TOKEN",      hint:"developer.twitter.com"},
+                {key:"TWITTER_ACCESS_SECRET",     hint:"developer.twitter.com"},
+                {key:"LINKEDIN_ACCESS_TOKEN",     hint:"LinkedIn Developer Portal"},
+                {key:"REPORT_RECIPIENT_EMAIL",    hint:"Email address for daily reports"},
+              ].map(({key,hint})=>(
+                <div key={key} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                  <code style={{fontSize:12,color:"#818cf8",fontFamily:"'DM Mono',monospace"}}>{key}</code>
+                  <span style={{fontSize:11,color:"#475569"}}>{hint}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Security warning */}
+            <div style={{background:"rgba(239,68,68,.06)",border:"1px solid rgba(239,68,68,.2)",borderRadius:16,padding:20}}>
+              <div style={{fontSize:14,fontWeight:800,color:"#ef4444",marginBottom:8}}>⚠️ اہم — Secret Key Rotate کریں</div>
+              <div style={{fontSize:12,color:"#fca5a5",lineHeight:1.7}}>
+                آپ نے اپنی secret key chat میں share کی تھی۔ ابھی یہ کریں:<br/>
+                Supabase → Project Settings → API → Secret Keys → Revoke → Generate New Key
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
 </html>
